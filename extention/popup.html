@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Word Censor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Word Censor</h1>
+    <p class="description">Just censors the word "the" for now</p>
+    
+    <div class="status">
+      <span class="status-indicator active"></span>
+      <span>Extension Active</span>
+    </div>
+    
+    <div class="info">
+      <p><strong>Censored word:</strong> "the"</p>
+      <p><strong>Replacement:</strong> ***</p>
+    </div>
+    
+    <button id="reload-btn">Reload Current Page</button>
+    
+    <div class="footer">
+      <p>Version 1.0</p>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
