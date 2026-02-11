@@ -17,23 +17,3 @@ function censorText(node) {
 }
 
 censorText(document.body);
-
-
-// Observe dom changes to censor dynamically loaded content
-const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    mutation.addedNodes.forEach((node) => {
-      if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
-        censorText(node);
-      }
-    });
-  });
-});
-
-// Start observing
-observer.observe(document.body, {
-  childList: true,
-  subtree: true
-});
-
-console.log('Word Censor extension is active!');
