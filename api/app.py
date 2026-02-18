@@ -65,6 +65,6 @@ def health():
 
 # ── Start server ───────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=True, ssl_context='adhoc')
     # debug=True means the server auto-restarts when you edit app.py
     # Turn this off when deploying to production
