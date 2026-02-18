@@ -1,11 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Word Censor",
-  "version": "1.0",
-  "description": "Censors specific words on web pages",
+  "name": "Toxic Content Filter",
+  "version": "2.0",
+  "description": "Automatically detects and blurs toxic content on web pages using ML",
   "permissions": [
     "activeTab",
     "storage"
+  ],
+  "host_permissions": [
+    "https://localhost:5000/*"
   ],
   "content_scripts": [
     {

@@ -2,31 +2,31 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Word Censor</title>
+  <title>Toxic Content Filter</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <h1>Word Censor</h1>
-    <p class="description">Just censors the word "the" for now</p>
-    
+    <h1>🛡️ Toxic Filter</h1>
+    <p class="description">ML-powered toxic content detection</p>
+
     <div class="status">
-      <span class="status-indicator active"></span>
-      <span>Extension Active</span>
+      <span class="status-indicator" id="status-dot"></span>
+      <span id="status-text">Checking API...</span>
     </div>
-    
+
     <div class="info">
-      <p><strong>Censored word:</strong> "the"</p>
-      <p><strong>Replacement:</strong> ***</p>
+      <p>Detects and blurs toxic content including:</p>
+      <p>🚫 Hate speech &nbsp; 💢 Insults &nbsp; ⚠️ Threats</p>
+      <p>Click any blurred content to reveal it.</p>
     </div>
-    
-    <button id="reload-btn">Reload Current Page</button>
-    
+
+    <button id="reload-btn">Reload & Scan Page</button>
+
     <div class="footer">
-      <p>Version 1.0</p>
+      <p>Version 2.0 — Powered by ML</p>
     </div>
   </div>
-  
   <script src="popup.js"></script>
 </body>
 </html>
