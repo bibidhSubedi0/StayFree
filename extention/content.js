@@ -13,7 +13,7 @@ function getTextElements() {
     const text = el.innerText?.trim();
     return (
       text &&
-      text.length > 20 &&        // ignore very short snippets like nav links
+      text.length > 5 &&        // ignore very short snippets like nav links
       !processed.has(el)         // ignore already-processed elements
     );
   });
@@ -38,9 +38,6 @@ async function filterPage() {
   const elements = getTextElements();
   if (elements.length === 0) return;
 
-  // Mark all as processed immediately so the MutationObserver
-  // doesn't re-queue them while we're waiting for the API
-  elements.forEach(el => processed.add(el));
 
   const texts = elements.map(el => el.innerText.trim());
 
@@ -60,6 +57,8 @@ async function filterPage() {
     const results = await response.json();
 
     results.forEach((result, i) => {
+      elements[i].processed = true;
+      processed.add(elements[i]);
       if (result.is_toxic) {
         blurElement(elements[i]);
       }

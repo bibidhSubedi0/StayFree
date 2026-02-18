@@ -1,4 +1,4 @@
-const API_URL = 'https://localhost:5000/predict';
+const API_URL = 'https://localhost:5000/';
 
 // ── Check if Flask API is reachable and update the status indicator ───────────
 async function checkAPIStatus() {
