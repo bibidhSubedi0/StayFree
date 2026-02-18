@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Toxic Classifier — Test Page</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      color: #1a1a2e;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    textarea:focus { border-color: #667eea; }
+
+    button {
+      margin-top: 14px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Result box ── */
+    #result {
+      margin-top: 24px;
+      display: none;
+    }
+
+    .verdict {
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .verdict.toxic    { background: #fff0f0; color: #c0392b; border: 1.5px solid #f5c6c6; }
+    .verdict.clean    { background: #f0fff4; color: #27ae60; border: 1.5px solid #b7e4c7; }
+
+    .labels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8f8f8;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+
+    .label-name { color: #444; text-transform: capitalize; }
+
+    .badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge.yes { background: #fde8e8; color: #c0392b; }
+    .badge.no  { background: #e8f5e9; color: #27ae60; }
+
+    .error {
+      margin-top: 16px;
+      padding: 12px;
+      background: #fff3cd;
+      border-radius: 8px;
+      color: #856404;
+      font-size: 14px;
+      display: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Toxic Classifier — Test Page</h1>
+    <p class="subtitle">Type any comment below and see what your model predicts.</p>
+
+    <textarea id="input" placeholder="Type a comment here..."></textarea>
+    <button id="btn" onclick="classify()">Classify</button>
+
+    <div class="error" id="error">
+        Could not reach the API. Make sure your Flask server is running at
+      <strong>http://localhost:5000</strong> and try again.
+    </div>
+
+    <div id="result">
+      <div class="verdict" id="verdict"></div>
+      <div class="labels" id="labels"></div>
+    </div>
+  </div>
+
+  <script>
+    const LABELS = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate'];
+
+    async function classify() {
+      const text = document.getElementById('input').value.trim();
+      if (!text) return;
+
+      // UI — loading state
+      const btn = document.getElementById('btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Classifying...';
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+
+      try {
+        const response = await fetch('http://localhost:5000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texts: [text] })
+        });
+
+        const data = await response.json();
+        const prediction = data[0];
+
+        // ── Verdict banner ──
+        const verdict = document.getElementById('verdict');
+        if (prediction.is_toxic) {
+          verdict.className = 'verdict toxic';
+          verdict.innerHTML = '🚨 Toxic content detected';
+        } else {
+          verdict.className = 'verdict clean';
+          verdict.innerHTML = '✅ Clean — no toxic content detected';
+        }
+
+        // ── Per-label breakdown ──
+        const labelsDiv = document.getElementById('labels');
+        labelsDiv.innerHTML = LABELS.map(label => `
+          <div class="label-row">
+            <span class="label-name">${label.replace('_', ' ')}</span>
+            <span class="badge ${prediction[label] ? 'yes' : 'no'}">
+              ${prediction[label] ? 'Yes' : 'No'}
+            </span>
+          </div>
+        `).join('');
+
+        document.getElementById('result').style.display = 'block';
+
+      } catch (err) {
+        document.getElementById('error').style.display = 'block';
+      }
+
+      // Reset button
+      btn.disabled = false;
+      btn.innerHTML = 'Classify';
+    }
+
+    // Also trigger on Ctrl+Enter
+    document.getElementById('input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.ctrlKey) classify();
+    });
+  </script>
+</body>
+</html>
